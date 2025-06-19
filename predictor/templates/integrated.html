@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}Integrated Prediction{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="section-title">
+            <h2>Integrated Prediction System</h2>
+            <p class="lead">Combine Indigenous knowledge with scientific data for enhanced accuracy</p>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-gradient-primary text-black">
+                <h3 class="mb-0"><i class="fas fa-brain me-2"></i>Prediction Parameters</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <h4 class="text-primary mb-4"><i class="fas fa-seedling me-2"></i>Indigenous Parameters</h4>
+                    <div class="row g-4">
+                        {% for field in form %}
+                        <div class="col-md-{% if 'latitude' in field.name or 'longitude' in field.name %}6{% else %}4{% endif %}">
+                            <label class="form-label fw-bold">{{ field.label }}</label>
+                            {{ field }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-calculator me-2"></i>Generate Prediction
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        {% if ik_result %}
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-info text-white">
+                        <h3 class="mb-0"><i class="fas fa-moon me-2"></i>Indigenous Prediction</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h4 class="text-info">Safety Assessment</h4>
+                            <p class="display-6 fw-bold {% if ik_result.0 == 'Good' %}text-success{% elif ik_result.0 == 'Risky' %}text-danger{% else %}text-warning{% endif %}">
+                                {{ ik_result.0 }}
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <h5 class="text-info">Wind</h5>
+                                <p class="fw-bold">{{ ik_result.1 }}</p>
+                            </div>
+                            <div class="col-6">
+                                <h5 class="text-info">Temperature</h5>
+                                <p class="fw-bold">{{ ik_result.2 }}</p>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <h5 class="text-info">Rainfall</h5>
+                                <p class="fw-bold">{{ ik_result.3 }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <h3 class="mb-0"><i class="fas fa-satellite me-2"></i>Scientific Data</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if sci_data %}
+                        <div class="row">
+                            <div class="col-6">
+                                <h5 class="text-success">Temperature</h5>
+                                <p class="fw-bold">{{ sci_data.temp }}°C</p>
+                            </div>
+                            <div class="col-6">
+                                <h5 class="text-success">Humidity</h5>
+                                <p class="fw-bold">{{ sci_data.humidity }}%</p>
+                            </div>
+                            <div class="col-6 mt-3">
+                                <h5 class="text-success">Precipitation</h5>
+                                <p class="fw-bold">{{ sci_data.precipitation }}mm</p>
+                            </div>
+                            <div class="col-6 mt-3">
+                                <h5 class="text-success">Wind Speed</h5>
+                                <p class="fw-bold">{{ sci_data.wind_speed }} m/s</p>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Scientific data currently unavailable
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header bg-warning text-dark">
+                <h3 class="mb-0"><i class="fas fa-star-of-life me-2"></i>Integrated Risk Assessment</h3>
+            </div>
+            <div class="card-body">
+                <h4 class="mb-4 text-center">{{ prediction }}</h4>
+                
+                <div class="risk-indicator mb-3">
+                    <div class="progress-bar" style="width: {{ risk_percentage }}%"></div>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-4">
+                    <span>Low Risk</span>
+                    <span>High Risk</span>
+                </div>
+                
+                <div class="alert {% if risk < 0.4 %}alert-success{% elif risk < 0.7 %}alert-warning{% else %}alert-danger{% endif %}">
+                    <div class="d-flex align-items-center">
+                        <i class="fas {% if risk < 0.4 %}fa-check-circle{% elif risk < 0.7 %}fa-exclamation-triangle{% else %}fa-skull-crossbones{% endif %} me-3 fa-2x"></i>
+                        <div>
+                            <h5 class="alert-heading">
+                                {% if risk < 0.4 %}
+                                Safe Conditions
+                                {% elif risk < 0.7 %}
+                                Moderate Risk
+                                {% else %}
+                                Dangerous Conditions
+                                {% endif %}
+                            </h5>
+                            <p class="mb-0">
+                                {% if risk < 0.4 %}
+                                The lake conditions are favorable for fishing activities.
+                                {% elif risk < 0.7 %}
+                                Exercise caution - conditions may change unexpectedly.
+                                {% else %}
+                                Avoid fishing - dangerous conditions detected.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
