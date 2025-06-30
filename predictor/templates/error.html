@@ -1,0 +1,9 @@
+<!-- error.html -->
+<div class="alert alert-danger">
+    <h2>Error Occurred</h2>
+    <p>{{ message }}</p>
+    {% if request.user.is_superuser %}
+    <pre>Request Method: {{ request.method }}</pre>
+    <pre>POST Data: {{ request.POST }}</pre>
+    {% endif %}
+</div>

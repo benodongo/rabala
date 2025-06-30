@@ -143,7 +143,7 @@ def determine_lake_position(wind_type, moon_day, cloud_percent, body_temp_value)
 
     def get_max_category(counts):
         if not counts:
-            return "Unknown"
+            return "Normal"
         return max(counts, key=lambda k: counts[k])
 
     lake_pos = get_max_category(lake_pos_counts)

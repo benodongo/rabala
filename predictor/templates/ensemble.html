@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Ensemble Prediction{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="section-title">
+            <h2>Ensemble Prediction System</h2>
+            <p class="lead">Combining Indigenous knowledge with scientific data using advanced ensemble methods</p>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-gradient-primary text-black">
+                <h3 class="mb-0"><i class="fas fa-robot me-2"></i>Prediction Parameters</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <h4 class="text-primary mb-4"><i class="fas fa-seedling me-2"></i>System Parameters</h4>
+                    <div class="row g-4">
+                        {% for field in form %}
+                        <div class="col-md-{% if 'latitude' in field.name or 'longitude' in field.name %}6{% else %}4{% endif %}">
+                            <label class="form-label fw-bold">{{ field.label }}</label>
+                            {{ field }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-calculator me-2"></i>Generate Prediction
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+       {% if ensemble_pred %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h3 class="mb-0"><i class="fas fa-brain me-2"></i>Ensemble Prediction</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h5 class="text-info">Safety Assessment</h5>
+                    <p class="display-6 fw-bold 
+                        {% if ensemble_pred == 'Good' %}text-success
+                        {% elif ensemble_pred == 'Risky' %}text-danger
+                        {% else %}text-warning{% endif %}">
+                        {{ ensemble_pred }}
+                    </p>
+                </div>
+                
+                <h5 class="text-info">Recommendation</h5>
+                <p class="lead">{{ ensemble_str }}</p>
+                
+                <div class="risk-indicator mb-3">
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar 
+                            {% if ensemble_risk < 0.4 %}bg-success
+                            {% elif ensemble_risk < 0.7 %}bg-warning
+                            {% else %}bg-danger{% endif %}" 
+                            role="progressbar" 
+                            style="width: {{ ensemble_risk|floatformat:0 }}%" 
+                            aria-valuenow="{{ ensemble_risk|floatformat:0 }}" 
+                            aria-valuemin="0" 
+                            aria-valuemax="100">
+                            {{ ensemble_risk|floatformat:0 }}%
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert 
+                    {% if ensemble_risk < 0.4 %}alert-success
+                    {% elif ensemble_risk < 0.7 %}alert-warning
+                    {% else %}alert-danger{% endif %}">
+                    <i class="fas 
+                        {% if ensemble_risk < 0.4 %}fa-check-circle
+                        {% elif ensemble_risk < 0.7 %}fa-exclamation-triangle
+                        {% else %}fa-skull-crossbones{% endif %} me-2"></i>
+                    <strong>
+                        {% if ensemble_risk < 0.4 %}Low Risk
+                        {% elif ensemble_risk < 0.7 %}Moderate Risk
+                        {% else %}High Risk{% endif %}
+                    </strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+    </div>
+</div>
+
+<style>
+    .risk-indicator {
+        background: #f8f9fa;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    .progress-bar {
+        transition: width 0.6s ease;
+    }
+    .card-header {
+        border-bottom: none;
+    }
+    .card {
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(33, 40, 50, 0.15);
+    }
+</style>
+{% endblock %}

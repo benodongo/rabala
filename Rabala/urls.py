@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('indigenous/', views.indigenous_prediction, name='indigenous'),
     path('integrated/', views.integrated_prediction, name='integrated'),
+    path('ensemble/', views.ensemble_prediction, name='ensemble'),
     path('', views.landing, name='landing'),  # Default to landing
     path('about/', views.about, name='about'),
     path('how-it-works/', views.how_it_works, name='how_it_works'),
