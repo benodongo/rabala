@@ -9,7 +9,7 @@ import pandas as pd
 
 MOON_MAP = {"New": 0, "Low": 28, "Midway": 14, "Ascending": 5, "Descending": 22}
 CLOUD_MAP = {"Clear": 0, "Light": 15, "Cloudy": 50, "Heavy": 100}
-TEMP_MAP = {"Cold": 35, "Moderate": 36.5, "High": 38, "Warm": 37}
+TEMP_MAP = {"Low": 35, "Moderate": 36.5, "High": 38, "Warm": 37}
 # Pre-load ensemble model (put this at top of views.py)
 ENSEMBLE_MODEL = None
 try:
@@ -96,7 +96,16 @@ def ensemble_prediction(request):
         ], dtype=np.float32)
 
         # 3. Make prediction
+        # Indigenous prediction
+        ik_result = determine_lake_position(
+            data['wind_type'],
+            MOON_MAP[data['moon_phase']],
+            CLOUD_MAP[data['cloud_condition']],
+            TEMP_MAP[data['body_temperature']]
+        )
+        # Standard prediction
         #ensemble_pred = ENSEMBLE_MODEL.predict(ik_inputs, sci_features[0])
+        # Threshold-adjusted prediction
         model = ENSEMBLE_MODEL
         model.set_class_thresholds({'Normal': 0.6, 'Good': 0.3, 'Risky': 0.3, 'Bad': 0.3})
         ensemble_pred = model.predict(ik_inputs, sci_features[0], adjust_thresholds=True)
@@ -117,7 +126,9 @@ def ensemble_prediction(request):
             'form': form,
             'ensemble_pred': ensemble_pred_label,
             'ensemble_str': risk_str,
-            'ensemble_risk': risk_value
+            'ensemble_risk': risk_value,
+            'ik_result': ik_result,
+            'sci_data': sci_data,
         })
 
     return render(request, 'ensemble.html', {'form': form})

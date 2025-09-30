@@ -35,6 +35,73 @@
         </div>
         
        {% if ensemble_pred %}
+       <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-info text-white">
+                        <h3 class="mb-0"><i class="fas fa-moon me-2"></i>Indigenous Prediction</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h4 class="text-info">Safety Assessment</h4>
+                            <p class="display-6 fw-bold {% if ik_result.0 == 'Good' %}text-success{% elif ik_result.0 == 'Risky' %}text-danger{% else %}text-warning{% endif %}">
+                                {{ ik_result.0 }}
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <h5 class="text-info">Wind</h5>
+                                <p class="fw-bold">{{ ik_result.1 }}</p>
+                            </div>
+                            <div class="col-6">
+                                <h5 class="text-info">Temperature</h5>
+                                <p class="fw-bold">{{ ik_result.2 }}</p>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <h5 class="text-info">Rainfall</h5>
+                                <p class="fw-bold">{{ ik_result.3 }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <h3 class="mb-0"><i class="fas fa-satellite me-2"></i>Scientific Data</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if sci_data %}
+                        <div class="row">
+                            <div class="col-6">
+                                <h5 class="text-success">Temperature</h5>
+                                <p class="fw-bold">{{ sci_data.temp }}°C</p>
+                            </div>
+                            <div class="col-6">
+                                <h5 class="text-success">Humidity</h5>
+                                <p class="fw-bold">{{ sci_data.humidity }}%</p>
+                            </div>
+                            <div class="col-6 mt-3">
+                                <h5 class="text-success">Precipitation</h5>
+                                <p class="fw-bold">{{ sci_data.precipitation }}mm</p>
+                            </div>
+                            <div class="col-6 mt-3">
+                                <h5 class="text-success">Wind Speed</h5>
+                                <p class="fw-bold">{{ sci_data.wind_speed }} m/s</p>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Scientific data currently unavailable
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
 <div class="row mt-4">
     <div class="col-md-12">
         <div class="card">

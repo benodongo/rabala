@@ -100,6 +100,21 @@ def determine_lake_position(wind_type, moon_day, cloud_percent, body_temp_value)
         ({"Tarai"}, {"New", "Low"}, {"Cloudy"}, {"High"}, "Windy", "Moderate", "Moderate", "Normal"),
         ({"Tarai"}, {"Ascending", "Midway", "Descending"}, {"Clear"}, {"Moderate"}, "Windy", "Moderate", "No", "Normal"),
         ({"Tarai"}, {"Ascending", "Midway", "Descending"}, {"Cloudy"}, {"High"}, "Windy", "High", "Moderate", "Normal"),
+
+        # Add these missing rules to your existing rules list:
+
+        # Missing Risky Lake Position Rules
+        ({"Kus", "Genya", "Nyabukoba"}, {"Low"}, {"Cloudy"}, {"Moderate"}, "Windy", "Moderate", "Heavy", "Bad"),
+        ({"Kus", "Genya", "Nyabukoba"}, {"Low"}, {"Heavy"}, {"High"}, "Stormy", "High", "Very Heavy", "Risky"),
+
+        # Missing Bad Lake Position Rules  
+        ({"Kus", "Genya"}, {"Low"}, {"Light"}, {"Moderate"}, "Stormy", "High", "Moderate", "Bad"),
+        ({"Genya"}, {"Midway"}, {"Light"}, {"Low"}, "Stormy", "High", "Drizzling", "Bad"),
+        ({"Kus"}, {"Midway"}, {"Heavy"}, {"Moderate"}, "Stormy", "Moderate", "Moderate", "Bad"),
+        ({"Kus", "Genya"}, {"New"}, {"Heavy"}, {"Low"}, "Stormy", "Moderate", "Moderate", "Bad"),
+
+        # Missing Normal Lake Position Rules
+        ({"Kus", "Genya"}, {"Low"}, {"Clear"}, {"Low"}, "Normal", "Moderate", "No Rain", "Normal"),
     ]
 
     for rule in rules:
