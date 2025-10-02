@@ -115,6 +115,14 @@ def determine_lake_position(wind_type, moon_day, cloud_percent, body_temp_value)
 
         # Missing Normal Lake Position Rules
         ({"Kus", "Genya"}, {"Low"}, {"Clear"}, {"Low"}, "Normal", "Moderate", "No Rain", "Normal"),
+        ({"Kus", "Genya"}, {"Low"}, {"Light"}, {"Moderate"}, "Stormy", "High", "Moderate", "Bad"),
+        ({"Kus", "Genya"}, {"Low"}, {"Clear"}, {"Low"}, "Normal", "Moderate", "No Rain", "Normal"),
+        ({"Genya"}, {"Midway"}, {"Light"}, {"Low"}, "Stormy", "High", "Drizzling", "Bad"),
+        ({"Kus"}, {"Midway"}, {"Heavy"}, {"Moderate"}, "Stormy", "Moderate", "Moderate", "Bad"),
+        ({"Kus", "Genya"}, {"New"}, {"Heavy"}, {"Low"}, "Stormy", "Moderate", "Moderate", "Bad"),
+        ({"Kus"}, {"New"}, {"Clear"}, {"Moderate"}, "Windy", "Moderate", "No Rain", "Normal"),
+        ({"Kus"}, {"New"}, {"Light"}, {"Moderate"}, "Windy", "High", "Drizzling", "Bad"),
+
     ]
 
     for rule in rules:
