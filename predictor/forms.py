@@ -11,8 +11,14 @@ MOON_PHASES = [("New", "New"), ("Low", "Low"), ("Midway", "Midway"),
 CLOUD_CONDITIONS = [("Clear", "Clear"), ("Light", "Light"),
                     ("Cloudy", "Cloudy"), ("Heavy", "Heavy")]
 
-BODY_TEMPS = [("Low", "Cold/Cool"), ("Moderate", "Moderate / Warm"),
-              ("High", "High")]
+BODY_TEMPS = [
+    ("Cold", "Cold"),
+    ("Cool", "Cool"),
+    ("Low", "Low"),
+    ("Moderate", "Moderate"),
+    ("Warm", "Warm"),
+    ("High", "High")
+]
 
 
 class IndigenousForm(forms.Form):

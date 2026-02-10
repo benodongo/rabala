@@ -6,10 +6,31 @@ import os
 from django.conf import settings
 import numpy as np
 import pandas as pd
+#mapping dictionaries
+MOON_MAP = {
+    "New": 0,
+    "Ascending": 5, 
+    "Midway": 14,
+    "Descending": 22,
+    "Low": 28
+}
 
-MOON_MAP = {"New": 0, "Low": 28, "Midway": 14, "Ascending": 5, "Descending": 22}
-CLOUD_MAP = {"Clear": 0, "Light": 15, "Cloudy": 50, "Heavy": 100}
-TEMP_MAP = {"Low": 35, "Moderate": 36.5, "High": 38, "Warm": 37}
+CLOUD_MAP = {
+    "Clear": 5,
+    "Light": 20,
+    "Cloudy": 50,
+    "Heavy": 85
+}
+
+TEMP_MAP = {
+    "Cold": 34.5,
+    "Cool": 36.0,
+    "Low": 35.0,
+    "Moderate": 37.0,
+    "Warm": 38.0,
+    "High": 39.0
+}
+
 # Pre-load ensemble model (put this at top of views.py)
 ENSEMBLE_MODEL = None
 try:
