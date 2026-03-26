@@ -6,39 +6,64 @@ import os
 from django.conf import settings
 import numpy as np
 import pandas as pd
-#mapping dictionaries
+
+# ---------------------------------------------------------------------------
+# Mapping dictionaries  —  convert crisp form labels to numeric inputs
+# ---------------------------------------------------------------------------
+
 MOON_MAP = {
-    "New": 0,
-    "Ascending": 5, 
-    "Midway": 14,
+    "New":        0,
+    "Ascending":  5,
+    "Midway":     14,
     "Descending": 22,
-    "Low": 28
+    "Low":        28,
+    # FIX: "Any Position" was in the old form choices but is a fuzzy rule
+    # wildcard, not a real observable phase. It has been removed from the form.
+    # This entry is kept here only as a safety fallback — it will never be
+    # submitted by the corrected form, but prevents a KeyError if stale POST
+    # data is received (e.g. cached form from old deployment).
+    "Any Position": 14,   # maps to mid-cycle as a neutral fallback
 }
 
 CLOUD_MAP = {
-    "Clear": 5,
-    "Light": 20,
+    "Clear":  5,
+    "Light":  20,
     "Cloudy": 50,
-    "Heavy": 85
+    "Heavy":  85,
 }
 
 TEMP_MAP = {
-    "Cold": 34.5,
-    "Cool": 36.0,
-    "Low": 35.0,
-    "Moderate": 37.0,
-    "Warm": 38.0,
-    "High": 39.0
+    "Cold":     34.5,   # peak of Cold MF  — triangular(34.0, 34.5, 35.5)
+    "Cool":     36.0,   # peak of Cool MF  — triangular(35.0, 36.0, 37.0)
+    # FIX: "Low" is an alias for Cool in the fuzzy MF (same triangular params).
+    # Changed from 35.0 → 35.5 so the value sits inside the Cool/Low MF
+    # rather than at its left edge (where membership = 0).
+    "Low":      35.5,
+    "Moderate": 37.0,   # peak of Moderate MF — triangular(36.5, 37.0, 37.5)
+    "Warm":     38.0,   # peak of Warm MF   — triangular(37.0, 38.0, 39.0)
+    "High":     39.0,   # peak of High MF   — triangular(38.0, 39.0, 40.0)
+    # FIX: "Hot" added to match v2 fuzzy rule base.
+    # Maps to 39.5 — the peak of the Hot MF: triangular(38.5, 39.5, 40.0).
+    "Hot":      39.5,
 }
 
-# Pre-load ensemble model (put this at top of views.py)
+# ---------------------------------------------------------------------------
+# Pre-load ensemble model
+# ---------------------------------------------------------------------------
+
 ENSEMBLE_MODEL = None
 try:
-    model_path = os.path.join(settings.BASE_DIR, 'predictor', 'models', 'ensemble_model.joblib')
+    model_path = os.path.join(
+        settings.BASE_DIR, 'predictor', 'models', 'ensemble_model.joblib'
+    )
     if os.path.exists(model_path):
         ENSEMBLE_MODEL = EnsembleModel.load(model_path)
 except Exception as e:
     print(f"Error loading ensemble model: {e}")
+
+# ---------------------------------------------------------------------------
+# Views
+# ---------------------------------------------------------------------------
 
 def indigenous_prediction(request):
     if request.method == 'POST':
@@ -49,24 +74,25 @@ def indigenous_prediction(request):
                 data['wind_type'],
                 MOON_MAP[data['moon_phase']],
                 CLOUD_MAP[data['cloud_condition']],
-                TEMP_MAP[data['body_temperature']]
+                TEMP_MAP[data['body_temperature']],
             )
             return render(request, 'indigenous.html', {'form': form, 'result': result})
     else:
         form = IndigenousForm()
     return render(request, 'indigenous.html', {'form': form})
 
+
 def integrated_prediction(request):
     if request.method == 'POST':
         form = IntegratedForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            # Indigenous prediction
+            # Indigenous knowledge prediction
             ik_result = determine_lake_position(
                 data['wind_type'],
                 MOON_MAP[data['moon_phase']],
                 CLOUD_MAP[data['cloud_condition']],
-                TEMP_MAP[data['body_temperature']]
+                TEMP_MAP[data['body_temperature']],
             )
             # Scientific data
             sci_data = get_scientific_weather(data['latitude'], data['longitude'])
@@ -74,11 +100,11 @@ def integrated_prediction(request):
             prediction, risk = integrate_predictions(ik_result, sci_data)
             risk_percentage = risk * 100
             return render(request, 'integrated.html', {
-                'form': form,
-                'ik_result': ik_result,
-                'sci_data': sci_data,
-                'prediction': prediction,
-                'risk': risk,
+                'form':            form,
+                'ik_result':       ik_result,
+                'sci_data':        sci_data,
+                'prediction':      prediction,
+                'risk':            risk,
                 'risk_percentage': risk_percentage,
             })
     else:
