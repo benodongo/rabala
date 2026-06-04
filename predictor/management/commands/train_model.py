@@ -10,7 +10,7 @@ from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import RandomUnderSampler
 from sklearn.utils.class_weight import compute_class_weight
 from predictor.scientific import EnsembleModel
-from predictor.fuzzy_logic import determine_lake_position
+from predictor.fuzzy_logic import determine_lake_position, fuzzy_posterior, LAKE_POS_CLASSES
 
 class Command(BaseCommand):
     help = 'Train and save the ensemble model using the specific data source format'
@@ -147,13 +147,34 @@ class Command(BaseCommand):
         # 4. Train Ensemble Model
         self.stdout.write(self.style.HTTP_INFO("\nTraining Ensemble Model..."))
         ensemble_model = EnsembleModel()
-        
-        # Get IK predictions
+
+        # Get IK predictions + fuzzy posteriors
         ik_preds_train = [determine_lake_position(*params)[0] for params in X_ik_train]
         ik_preds_train = [p if p in ["Normal", "Risky", "Bad", "Good"] else "Normal" for p in ik_preds_train]
-        
-        # Train with class weights
-        ensemble_model.train(X_ik_train, X_sci_train, y_train, ik_preds_train, class_weights=class_weights)
+        ik_posteriors_train = [
+            fuzzy_posterior(*params, classes=LAKE_POS_CLASSES) for params in X_ik_train
+        ]
+
+        # Diagnostic: how often does the fuzzy verdict match the ground-truth
+        # label? If agreement is near-perfect the ensemble has no disagreement
+        # data to learn from and will always defer to IK.
+        agree = sum(1 for p, t in zip(ik_preds_train, y_train) if p == t)
+        agreement_rate = agree / max(1, len(y_train))
+        self.stdout.write(f"IK / label agreement rate: {agreement_rate:.1%}")
+        if agreement_rate > 0.95:
+            self.stdout.write(self.style.WARNING(
+                "WARNING: IK verdict matches the training label on >95% of "
+                "samples. The ensemble cannot learn to override IK without "
+                "disagreement examples — collect cases where the fuzzy "
+                "verdict was wrong before expecting meaningful ML improvement."
+            ))
+
+        # Train with class weights (passes fuzzy posteriors)
+        ensemble_model.train(
+            X_ik_train, X_sci_train, y_train, ik_preds_train,
+            class_weights=class_weights,
+            ik_posteriors=ik_posteriors_train,
+        )
         
         # 5. Evaluate
         self.stdout.write(self.style.HTTP_INFO("Evaluating model..."))

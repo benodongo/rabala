@@ -1,228 +1,665 @@
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rabala Lake Predictor - {% block title %}{% endblock %}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="description" content="PC-HEWS — Lake Victoria fishing-condition forecasts combining indigenous knowledge with calibrated machine learning.">
+    <title>{% block title %}PC-HEWS{% endblock %} · Lake Victoria Predictor</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=block" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
+        /* ----------------------------------------------------------------- */
+        /*  Material 3-inspired design tokens                                */
+        /* ----------------------------------------------------------------- */
         :root {
-            --primary: #1a6fb0;
-            --primary-dark: #0d4d7a;
-            --secondary: #4CAF50;
-            --accent: #FF9800;
-            --light: #f8f9fa;
-            --dark: #2c3e50;
-            --text: #333;
-            --gray: #6c757d;
-            --success: #28a745;
-            --warning: #ffc107;
-            --danger: #dc3545;
-            --info: #17a2b8;
-            --card-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            --transition: all 0.3s ease;
+            --brand-50:  #eef6ff;
+            --brand-100: #d9eaff;
+            --brand-500: #3479f6;
+            --brand-600: #1f5be0;
+            --brand-700: #1947b7;
+            --brand-800: #193e92;
+
+            --leaf-50:  #ecfdf5;
+            --leaf-100: #d1fae5;
+            --leaf-500: #10b981;
+            --leaf-600: #059669;
+            --leaf-700: #047857;
+
+            --amber-50:  #fffbeb;
+            --amber-500: #f59e0b;
+            --amber-600: #d97706;
+
+            --rose-50:  #fff1f2;
+            --rose-500: #f43f5e;
+            --rose-600: #e11d48;
+
+            --sky-50:   #f0f9ff;
+            --sky-500:  #0ea5e9;
+            --sky-600:  #0284c7;
+
+            --ink-50:   #f8fafc;
+            --ink-100:  #f1f5f9;
+            --ink-200:  #e2e8f0;
+            --ink-300:  #cbd5e1;
+            --ink-500:  #64748b;
+            --ink-700:  #334155;
+            --ink-900:  #0f172a;
+
+            --shadow-1: 0 1px 2px rgba(15,23,42,.06), 0 1px 3px rgba(15,23,42,.04);
+            --shadow-2: 0 4px 6px -1px rgba(15,23,42,.06), 0 2px 4px -2px rgba(15,23,42,.04);
+            --shadow-3: 0 10px 15px -3px rgba(15,23,42,.07), 0 4px 6px -4px rgba(15,23,42,.05);
+            --shadow-4: 0 20px 25px -5px rgba(15,23,42,.08), 0 8px 10px -6px rgba(15,23,42,.05);
+            --shadow-5: 0 25px 50px -12px rgba(15,23,42,.18);
+            --glow-brand: 0 8px 24px -8px rgba(31,91,224,.45);
+            --glow-leaf:  0 8px 24px -8px rgba(5,150,105,.45);
+
+            --r-sm: 10px;
+            --r-md: 16px;
+            --r-lg: 22px;
+            --r-xl: 28px;
+            --r-2xl: 36px;
+
+            --t: 220ms cubic-bezier(.2,.7,.2,1);
         }
-        
+
+        * { box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; }
         body {
-            font-family: 'Open Sans', sans-serif;
-            color: var(--text);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            color: var(--ink-700);
+            background: var(--ink-50);
             line-height: 1.6;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            display: flex; flex-direction: column;
         }
-        
-        h1, h2, h3, h4, h5 {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
+        main { flex: 1 0 auto; }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            color: var(--ink-900); font-weight: 700; letter-spacing: -0.015em;
+            margin: 0;
         }
-        
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-        }
-        
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary);
-            text-decoration: none;
-        }
-        
-        .logo i {
-            color: var(--secondary);
-        }
-        
-        .btn-primary {
-            background: var(--primary);
-            border: none;
-            padding: 12px 28px;
-            border-radius: 50px;
-            font-weight: 600;
-        }
-        
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(26, 111, 176, 0.2);
-        }
-        
-        .btn-secondary {
-            background: var(--secondary);
-            border: none;
-            padding: 12px 28px;
-            border-radius: 50px;
-            font-weight: 600;
-        }
-        
-        .form-control, .form-select {
-            padding: 12px 15px;
-            border-radius: 10px;
-            border: 1px solid #ced4da;
-            transition: var(--transition);
-        }
-        
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 0.25rem rgba(26, 111, 176, 0.25);
-        }
-        
-        .card {
-            border: none;
-            border-radius: 20px;
-            box-shadow: var(--card-shadow);
-            transition: var(--transition);
-            margin-bottom: 30px;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-        }
-        
-        .card-header {
-            border-radius: 20px 20px 0 0 !important;
-            padding: 20px;
-            font-weight: 600;
-        }
-        
-        .progress {
-            height: 30px;
-            border-radius: 15px;
-            background: #e9ecef;
-        }
-        
-        .progress-bar {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            border-radius: 15px;
-        }
-        
-        .risk-indicator {
-            height: 30px;
-            border-radius: 15px;
-            background: linear-gradient(
-                to right,
-                #28a745 0%,
-                #ffc107 50%,
-                #dc3545 100%
-            );
-        }
-        
-        .section-title {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        .section-title h2 {
-            position: relative;
+        h1 { font-size: clamp(2rem, 4.6vw, 3.4rem); line-height: 1.12; font-weight: 800; }
+        h2 { font-size: clamp(1.6rem, 3.1vw, 2.3rem); }
+        h3 { font-size: 1.2rem; }
+        h4 { font-size: 1.05rem; }
+        p  { color: var(--ink-700); margin: 0; }
+        a  { color: var(--brand-600); text-decoration: none; transition: color var(--t); }
+        a:hover { color: var(--brand-700); }
+        hr.divider { border: 0; border-top: 1px solid var(--ink-100); margin: 1.5rem 0; }
+
+        /* --- Material Symbols ------------------------------------------- */
+        .icon {
+            font-family: 'Material Symbols Rounded';
+            font-weight: normal; font-style: normal;
             display: inline-block;
-            padding-bottom: 15px;
+            line-height: 1; text-transform: none; letter-spacing: normal;
+            word-wrap: normal; white-space: nowrap; direction: ltr;
+            font-feature-settings: 'liga';
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+            vertical-align: -0.2em;
+            font-variation-settings: 'opsz' 24, 'wght' 500, 'FILL' 0, 'GRAD' 0;
+            user-select: none;
         }
-        
-        .section-title h2::after {
+        .icon.icon-fill { font-variation-settings: 'opsz' 24, 'wght' 500, 'FILL' 1, 'GRAD' 0; }
+        .icon.icon-sm { font-size: 18px; vertical-align: -0.22em; }
+        .icon.icon-xs { font-size: 16px; vertical-align: -0.22em; }
+        .icon.icon-lg { font-size: 28px; vertical-align: -0.22em; }
+        .icon.icon-xl { font-size: 32px; vertical-align: -0.22em; }
+
+        /* --- Top navigation --------------------------------------------- */
+        .topbar {
+            position: sticky; top: 0; z-index: 1030;
+            backdrop-filter: saturate(180%) blur(12px);
+            -webkit-backdrop-filter: saturate(180%) blur(12px);
+            background: rgba(255,255,255,.82);
+            border-bottom: 1px solid rgba(15,23,42,.06);
+        }
+        .brand {
+            display: inline-flex; align-items: center; gap: .6rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800; font-size: 1.15rem;
+            color: var(--ink-900);
+        }
+        .brand:hover { color: var(--ink-900); }
+        .brand-mark {
+            width: 36px; height: 36px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--brand-500), var(--leaf-500));
+            display: inline-flex; align-items: center; justify-content: center;
+            color: white; box-shadow: var(--shadow-2);
+        }
+        .nav-link-mat {
+            display: inline-flex; align-items: center;
+            padding: .5rem .9rem; border-radius: 999px;
+            font-weight: 500; color: var(--ink-700);
+            transition: background var(--t), color var(--t);
+        }
+        .nav-link-mat:hover { background: var(--brand-50); color: var(--brand-700); }
+        .nav-link-mat.active { background: var(--brand-50); color: var(--brand-700); }
+
+        /* --- Buttons ---------------------------------------------------- */
+        .btn-mat {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: .5rem;
+            padding: .65rem 1.25rem;
+            border: 0; border-radius: 999px;
+            font-family: inherit; font-weight: 600; font-size: .95rem;
+            cursor: pointer; text-decoration: none;
+            transition: background var(--t), box-shadow var(--t), transform var(--t), color var(--t);
+            white-space: nowrap;
+        }
+        .btn-mat.btn-lg { padding: .85rem 1.6rem; font-size: 1rem; }
+        .btn-mat.btn-sm { padding: .45rem .9rem; font-size: .85rem; }
+        .btn-filled  { background: var(--brand-600); color: white; box-shadow: var(--shadow-2); }
+        .btn-filled:hover  { background: var(--brand-700); color: white; box-shadow: var(--glow-brand); transform: translateY(-1px); }
+        .btn-leaf    { background: var(--leaf-600); color: white; box-shadow: var(--shadow-2); }
+        .btn-leaf:hover    { background: var(--leaf-700); color: white; box-shadow: var(--glow-leaf); transform: translateY(-1px); }
+        .btn-tonal   { background: var(--brand-50); color: var(--brand-700); }
+        .btn-tonal:hover   { background: var(--brand-100); color: var(--brand-800); }
+        .btn-outline-mat { background: transparent; color: var(--ink-700); border: 1px solid var(--ink-200); }
+        .btn-outline-mat:hover { background: var(--ink-50); color: var(--ink-900); }
+        .btn-ghost   { background: transparent; color: var(--ink-700); }
+        .btn-ghost:hover   { background: var(--ink-100); color: var(--ink-900); }
+        .btn-dark    { background: var(--ink-900); color: white; }
+        .btn-dark:hover    { background: var(--ink-700); color: white; }
+        .btn-glass   { background: rgba(255,255,255,.14); color: white; backdrop-filter: blur(6px); }
+        .btn-glass:hover   { background: rgba(255,255,255,.22); color: white; }
+
+        /* --- Surfaces / cards ------------------------------------------- */
+        .surface {
+            background: white;
+            border: 1px solid var(--ink-100);
+            border-radius: var(--r-xl);
+            box-shadow: var(--shadow-1);
+        }
+        .surface-hover { transition: box-shadow var(--t), transform var(--t); }
+        .surface-hover:hover { box-shadow: var(--shadow-3); transform: translateY(-3px); }
+        .surface-accent { position: relative; overflow: hidden; }
+        .surface-accent::before {
+            content: ''; position: absolute; left: 0; right: 0; top: 0; height: 4px;
+            background: linear-gradient(90deg, var(--brand-500), var(--leaf-500));
+        }
+        .surface-accent.acc-leaf::before { background: linear-gradient(90deg, var(--leaf-500), var(--brand-500)); }
+        .surface-accent.acc-amber::before { background: linear-gradient(90deg, var(--amber-500), var(--rose-500)); }
+        .surface-accent.acc-sky::before { background: linear-gradient(90deg, var(--sky-500), var(--brand-500)); }
+
+        /* --- Chip ------------------------------------------------------- */
+        .chip {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .3rem .75rem; border-radius: 999px;
+            background: var(--brand-50); color: var(--brand-700);
+            font-size: .72rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .07em;
+        }
+        .chip.chip-leaf  { background: var(--leaf-50);  color: var(--leaf-700); }
+        .chip.chip-amber { background: var(--amber-50); color: var(--amber-600); }
+        .chip.chip-rose  { background: var(--rose-50);  color: var(--rose-600); }
+        .chip.chip-sky   { background: var(--sky-50);   color: var(--sky-600); }
+        .chip.chip-glass { background: rgba(255,255,255,.14); color: white; }
+
+        /* --- Form fields ------------------------------------------------ */
+        .field-label {
+            display: inline-flex; align-items: center; gap: .45rem;
+            font-size: .88rem; font-weight: 600; color: var(--ink-900);
+            margin-bottom: .45rem;
+        }
+        .field-label .icon { color: var(--brand-600); }
+        .form-control.field-input,
+        .form-select.field-select {
+            border-radius: var(--r-md);
+            border: 1px solid var(--ink-200);
+            background: var(--ink-50);
+            padding: .75rem 1rem;
+            font-size: .95rem;
+            box-shadow: none;
+            transition: background var(--t), border-color var(--t), box-shadow var(--t);
+        }
+        .form-control.field-input:focus,
+        .form-select.field-select:focus {
+            background: white;
+            border-color: var(--brand-500);
+            box-shadow: 0 0 0 4px var(--brand-100);
+        }
+        .field-hint { font-size: .78rem; color: var(--ink-500); margin-top: .35rem; }
+
+        /* --- Verdict tiles --------------------------------------------- */
+        .verdict {
+            display: flex; align-items: center; gap: 1rem;
+            padding: 1.25rem; border-radius: var(--r-lg);
+        }
+        .verdict-icon {
+            width: 56px; height: 56px; border-radius: 16px;
+            display: inline-flex; align-items: center; justify-content: center;
+            color: white; flex-shrink: 0; box-shadow: var(--shadow-2);
+        }
+        .verdict.verdict-good   { background: var(--leaf-50); }
+        .verdict.verdict-good   .verdict-icon { background: var(--leaf-600); }
+        .verdict.verdict-normal { background: var(--sky-50); }
+        .verdict.verdict-normal .verdict-icon { background: var(--sky-600); }
+        .verdict.verdict-risky  { background: var(--amber-50); }
+        .verdict.verdict-risky  .verdict-icon { background: var(--amber-500); }
+        .verdict.verdict-bad    { background: var(--rose-50); }
+        .verdict.verdict-bad    .verdict-icon { background: var(--rose-600); }
+        .verdict-label { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; color: var(--ink-500); margin: 0; }
+        .verdict-value { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 1.8rem; color: var(--ink-900); margin: .15rem 0 0; line-height: 1.1; }
+
+        /* --- Metric ----------------------------------------------------- */
+        .metric {
+            background: var(--ink-50);
+            border: 1px solid var(--ink-100);
+            border-radius: var(--r-md);
+            padding: 1rem 1.1rem;
+        }
+        .metric-label { display: inline-flex; align-items: center; gap: .4rem; font-size: .72rem; text-transform: uppercase; letter-spacing: .07em; font-weight: 700; color: var(--ink-500); margin: 0 0 .35rem; }
+        .metric-label .icon { color: var(--brand-600); }
+        .metric-value { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 1.25rem; color: var(--ink-900); margin: 0; }
+
+        /* --- Risk meter ------------------------------------------------- */
+        .risk-meter {
+            position: relative;
+            height: 14px; border-radius: 999px;
+            background: linear-gradient(90deg, #10b981 0%, #f59e0b 55%, #dc2626 100%);
+            overflow: visible;
+        }
+        .risk-meter::after {
             content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: var(--secondary);
-            border-radius: 2px;
+            position: absolute; top: -4px; bottom: -4px;
+            left: var(--risk-pos, 0%); width: 5px;
+            background: var(--ink-900); border-radius: 4px;
+            box-shadow: 0 0 0 3px rgba(255,255,255,.95), 0 4px 12px rgba(15,23,42,.2);
+        }
+        .risk-axis { display: flex; justify-content: space-between; font-size: .75rem; color: var(--ink-500); margin-top: .5rem; }
+
+        /* --- Confidence bars ------------------------------------------- */
+        .conf-row { margin-bottom: .8rem; }
+        .conf-head { display: flex; justify-content: space-between; font-size: .9rem; margin-bottom: .3rem; }
+        .conf-head strong { color: var(--ink-900); }
+        .conf-bar  { height: 8px; background: var(--ink-100); border-radius: 999px; overflow: hidden; }
+        .conf-fill { height: 100%; border-radius: 999px; transition: width .8s cubic-bezier(.2,.7,.2,1); }
+        .fill-good   { background: var(--leaf-500); }
+        .fill-normal { background: var(--sky-500); }
+        .fill-risky  { background: var(--amber-500); }
+        .fill-bad    { background: var(--rose-500); }
+
+        /* --- Alerts ----------------------------------------------------- */
+        .alert-mat {
+            display: flex; align-items: flex-start; gap: .9rem;
+            padding: 1rem 1.15rem; border-radius: var(--r-md);
+            border: 1px solid var(--ink-100);
+            background: var(--ink-50); color: var(--ink-700);
+        }
+        .alert-mat.alert-success { background: var(--leaf-50); border-color: var(--leaf-100); color: var(--leaf-700); }
+        .alert-mat.alert-info    { background: var(--sky-50);  border-color: #bae6fd;       color: var(--sky-600); }
+        .alert-mat.alert-warning { background: var(--amber-50); border-color: #fde68a;      color: var(--amber-600); }
+        .alert-mat.alert-danger  { background: var(--rose-50); border-color: #fecdd3;       color: var(--rose-600); }
+        .alert-mat p { color: inherit; }
+
+        /* --- Icon container variants ----------------------------------- */
+        .icon-tile {
+            width: 48px; height: 48px; border-radius: var(--r-md);
+            display: inline-flex; align-items: center; justify-content: center;
+            background: var(--brand-50); color: var(--brand-600);
+        }
+        .icon-tile.tile-lg { width: 56px; height: 56px; border-radius: 18px; }
+        .icon-tile.leaf  { background: var(--leaf-50);  color: var(--leaf-600); }
+        .icon-tile.amber { background: var(--amber-50); color: var(--amber-600); }
+        .icon-tile.rose  { background: var(--rose-50);  color: var(--rose-600); }
+        .icon-tile.sky   { background: var(--sky-50);   color: var(--sky-600); }
+        .icon-tile.dark  { background: var(--ink-900); color: white; box-shadow: var(--shadow-2); }
+
+        /* --- Hero card -------------------------------------------------- */
+        .hero-card {
+            background: white; border: 1px solid var(--ink-100);
+            border-radius: var(--r-xl); padding: 1.4rem;
+            box-shadow: var(--shadow-4);
+            transform: rotate(-1deg);
+            transition: transform var(--t);
+        }
+        .hero-card:hover { transform: rotate(0); }
+        .hero-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: .55rem 0;
+            border-bottom: 1px dashed var(--ink-100);
+            font-size: .9rem;
+        }
+        .hero-row:last-of-type { border-bottom: 0; }
+        .hero-row .l { display: inline-flex; align-items: center; gap: .5rem; color: var(--ink-700); }
+        .hero-row .l .icon { color: var(--brand-600); }
+        .hero-row .r { font-weight: 700; color: var(--ink-900); }
+
+        /* --- Footer ----------------------------------------------------- */
+        .site-footer {
+            margin-top: 4rem;
+            background: var(--ink-900);
+            color: rgba(255,255,255,.72);
+            padding: 3.5rem 0 1.5rem;
+        }
+        .site-footer h5 { color: white; font-size: 1rem; margin-bottom: 1rem; }
+        .site-footer a  { color: rgba(255,255,255,.72); }
+        .site-footer a:hover { color: white; }
+        .site-footer hr { border-color: rgba(255,255,255,.08); }
+
+        /* --- Numbered step --------------------------------------------- */
+        .step-num {
+            width: 44px; height: 44px; flex-shrink: 0;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--brand-500), var(--brand-800));
+            color: white;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800; font-size: 1.1rem;
+            box-shadow: var(--shadow-2);
+        }
+
+        /* --- Utility ---------------------------------------------------- */
+        .text-muted-2 { color: var(--ink-500) !important; }
+        .text-brand   { color: var(--brand-600) !important; }
+        .text-leaf    { color: var(--leaf-600) !important; }
+        .text-amber   { color: var(--amber-600) !important; }
+        .text-sky     { color: var(--sky-600) !important; }
+        .text-rose    { color: var(--rose-600) !important; }
+        .bg-gradient-hero {
+            background:
+                radial-gradient(900px 420px at 90% 0%, rgba(31,91,224,.10), transparent 60%),
+                radial-gradient(900px 420px at 0% 100%, rgba(5,150,105,.10), transparent 60%),
+                linear-gradient(180deg, #ffffff 0%, var(--ink-50) 100%);
+        }
+        .rounded-mat   { border-radius: var(--r-xl); }
+        .rounded-mat-lg{ border-radius: var(--r-2xl); }
+        .shadow-mat-2  { box-shadow: var(--shadow-2); }
+        .shadow-mat-3  { box-shadow: var(--shadow-3); }
+        .shadow-mat-4  { box-shadow: var(--shadow-4); }
+        .gradient-text {
+            background: linear-gradient(90deg, var(--brand-600), var(--leaf-600));
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+
+        /* --- Motion ----------------------------------------------------- */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin   { to { transform: rotate(360deg); } }
+        .anim-fade { animation: fadeIn .6s ease-out both; }
+        .anim-rise { animation: riseIn .6s cubic-bezier(.2,.7,.2,1) both; }
+
+        /* Reveal on scroll */
+        .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1); }
+        .reveal.in-view { opacity: 1; transform: none; }
+
+        /* Submit-loading state */
+        .btn-mat[data-loading="1"] { pointer-events: none; opacity: .85; }
+        .btn-mat[data-loading="1"] .icon { display: none; }
+        .btn-mat[data-loading="1"]::before {
+            content: ''; width: 1em; height: 1em; border-radius: 50%;
+            border: 2px solid rgba(255,255,255,.45); border-top-color: white;
+            animation: spin .7s linear infinite;
+        }
+        .btn-mat.btn-outline-mat[data-loading="1"]::before,
+        .btn-mat.btn-tonal[data-loading="1"]::before {
+            border-color: rgba(15,23,42,.2); border-top-color: var(--ink-900);
+        }
+
+        /* Animated conf-fill on first reveal */
+        .conf-fill.from-zero { width: 0 !important; }
+
+        /* --- Form errors ----------------------------------------------- */
+        .field-error {
+            display: flex; align-items: center; gap: .35rem;
+            margin-top: .4rem; font-size: .8rem; color: var(--rose-600);
+        }
+        .field-error::before {
+            content: 'error'; font-family: 'Material Symbols Rounded';
+            font-size: 16px; font-variation-settings: 'FILL' 1;
+        }
+        .form-control.field-input.is-invalid,
+        .form-select.field-select.is-invalid {
+            border-color: var(--rose-500);
+            background: #fff5f5;
+        }
+        .form-control.field-input.is-invalid:focus,
+        .form-select.field-select.is-invalid:focus {
+            box-shadow: 0 0 0 4px rgba(244,63,94,.15);
+        }
+        .form-nonfield-errors {
+            margin-bottom: 1.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .verdict-value { font-size: 1.4rem; }
+            .hero-card { transform: none; }
         }
     </style>
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <header class="navbar navbar-expand-lg sticky-top mb-4">
+    <header class="topbar">
         <div class="container">
-            <a class="navbar-brand logo" href="{% url 'landing' %}">
-                <i class="fas fa-water me-2"></i>PC&dash;HEWS
-            </a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'indigenous' %}">Indigenous</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'integrated' %}">Integrated</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'about' %}">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'how_it_works' %}">How It Works</a>
-                    </li>
-                </ul>
-            </div>
+            <nav class="navbar navbar-expand-lg p-0 py-2">
+                <a class="brand" href="{% url 'landing' %}">
+                    <span class="brand-mark"><span class="icon icon-sm">water</span></span>
+                    PC-HEWS
+                </a>
+                <button class="navbar-toggler border-0 ms-auto" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#mainNav"
+                        aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="icon">menu</span>
+                </button>
+
+                {% url 'landing' as landing_url %}
+                {% url 'indigenous' as ik_url %}
+                {% url 'integrated' as int_url %}
+                {% url 'ensemble' as ens_url %}
+                {% url 'about' as about_url %}
+                {% url 'how_it_works' as hiw_url %}
+
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <div class="ms-auto d-flex flex-lg-row flex-column align-items-lg-center gap-1 mt-3 mt-lg-0">
+                        <a class="nav-link-mat {% if request.path == landing_url %}active{% endif %}" href="{{ landing_url }}">Home</a>
+                        <a class="nav-link-mat {% if request.path == ik_url %}active{% endif %}" href="{{ ik_url }}">Indigenous</a>
+                        <a class="nav-link-mat {% if request.path == int_url %}active{% endif %}" href="{{ int_url }}">Integrated</a>
+                        <a class="nav-link-mat {% if request.path == ens_url %}active{% endif %}" href="{{ ens_url }}">Ensemble</a>
+                        <a class="nav-link-mat {% if request.path == hiw_url %}active{% endif %}" href="{{ hiw_url }}">How it works</a>
+                        <a class="nav-link-mat {% if request.path == about_url %}active{% endif %}" href="{{ about_url }}">About</a>
+                        <a href="{{ ens_url }}" class="btn-mat btn-dark ms-lg-2"><span class="icon icon-sm">bolt</span>Try Ensemble</a>
+                    </div>
+                </div>
+            </nav>
         </div>
     </header>
 
-    <main class="container py-4">
+    <main class="container py-4 py-lg-5 anim-fade">
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-dark text-white py-5 mt-5">
+    <footer class="site-footer">
         <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <h3><i class="fas fa-water me-2"></i>PC&dash;HEWS Lake Predictor</h3>
-                    <p class="mt-3">Combining traditional Indigenous knowledge with modern scientific approaches.</p>
+            <div class="row g-4">
+                <div class="col-md-5">
+                    <a class="brand text-white" href="{% url 'landing' %}" style="color:white;">
+                        <span class="brand-mark"><span class="icon icon-sm">water</span></span>
+                        PC-HEWS
+                    </a>
+                    <p class="mt-3" style="max-width:36ch;">A hybrid Lake Victoria fishing-condition predictor combining indigenous knowledge with calibrated machine learning.</p>
                 </div>
-                <div class="col-md-3">
-                    <h5>Quick Links</h5>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link text-white-50" href="{% url 'indigenous' %}">Indigenous Prediction</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white-50" href="{% url 'integrated' %}">Integrated Prediction</a>
-                        </li>
-                         <li class="nav-item">
-                            <a class="nav-link text-white-50" href="{% url 'ensemble' %}">Ensemble Prediction</a>
-                        </li>
+                <div class="col-md-3 col-sm-6">
+                    <h5>Predictions</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'indigenous' %}">Indigenous</a></li>
+                        <li class="mb-2"><a href="{% url 'integrated' %}">Integrated</a></li>
+                        <li class="mb-2"><a href="{% url 'ensemble' %}">Ensemble</a></li>
                     </ul>
                 </div>
-                <div class="col-md-3">
-                    <h5>Contact</h5>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link text-white-50" href="#"><i class="fas fa-envelope me-2"></i>info@rabala.org</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white-50" href="#"><i class="fas fa-phone me-2"></i>+254 712 345 678</a>
-                        </li>
+                <div class="col-md-4 col-sm-6">
+                    <h5>Project</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'about' %}">About</a></li>
+                        <li class="mb-2"><a href="{% url 'how_it_works' %}">How it works</a></li>
+                        <li class="mb-2"><a href="/healthz/">System status</a></li>
                     </ul>
                 </div>
             </div>
-            <hr class="my-4 bg-secondary">
-            <div class="text-center">
-                <p>&copy; 2025 PC&dash;HEWS Lake Predictor. All rights reserved.</p>
+            <hr class="my-4">
+            <div class="d-flex flex-wrap justify-content-between gap-2 small">
+                <span>&copy; 2025 PC-HEWS · Lake Victoria fishing-condition predictor</span>
+                <span>Weather data via <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a></span>
             </div>
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    (function () {
+        'use strict';
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // 1. Submit loading state on every form
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', () => {
+                form.querySelectorAll('button[type="submit"]').forEach(btn => {
+                    btn.dataset.loading = '1';
+                    btn.disabled = true;
+                });
+            });
+        });
+
+        // 2. Auto-scroll to first results block after POST
+        const results = document.querySelector('[data-results]');
+        if (results) {
+            requestAnimationFrame(() => {
+                results.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+            });
+        }
+
+        // 3. Reveal on scroll
+        const revealEls = document.querySelectorAll('.reveal');
+        if (revealEls.length && 'IntersectionObserver' in window) {
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); }
+                });
+            }, { rootMargin: '0px 0px -60px 0px', threshold: 0.08 });
+            revealEls.forEach(el => io.observe(el));
+        } else {
+            revealEls.forEach(el => el.classList.add('in-view'));
+        }
+
+        // 4. Count-up for [data-count] numbers
+        const countEls = document.querySelectorAll('[data-count]');
+        const animateCount = (el) => {
+            const target = parseFloat(el.dataset.count);
+            const suffix = el.dataset.suffix || '';
+            const decimals = parseInt(el.dataset.decimals || '0', 10);
+            const dur = 1100;
+            const t0 = performance.now();
+            const tick = (now) => {
+                const p = Math.min(1, (now - t0) / dur);
+                const eased = 1 - Math.pow(1 - p, 3);
+                el.textContent = (target * eased).toFixed(decimals) + suffix;
+                if (p < 1) requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+        };
+        if (countEls.length && 'IntersectionObserver' in window && !reduceMotion) {
+            const co = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) { animateCount(e.target); co.unobserve(e.target); }
+                });
+            }, { threshold: 0.4 });
+            countEls.forEach(el => { el.textContent = '0'; co.observe(el); });
+        }
+
+        // 5. Animate confidence bars from 0 → target on reveal
+        const fills = document.querySelectorAll('.conf-fill');
+        if (fills.length && !reduceMotion) {
+            fills.forEach(f => { f.dataset.target = f.style.width; f.style.width = '0%'; });
+            requestAnimationFrame(() => {
+                setTimeout(() => fills.forEach(f => { f.style.width = f.dataset.target; }), 60);
+            });
+        }
+
+        // 5b. Mark invalid fields based on adjacent .field-error nodes
+        document.querySelectorAll('.field-error').forEach(err => {
+            const wrap = err.closest('.col-md-6, .col-md-12, .col-lg-3, .col-md-3, .col-12, div');
+            if (!wrap) return;
+            wrap.querySelectorAll('input, select, textarea').forEach(el => el.classList.add('is-invalid'));
+        });
+
+        // 6. Persist form values in localStorage
+        document.querySelectorAll('form[data-persist]').forEach(form => {
+            const key = 'pchews:' + form.dataset.persist;
+            let saved = {};
+            try { saved = JSON.parse(localStorage.getItem(key) || '{}'); } catch (_) {}
+            form.querySelectorAll('input, select, textarea').forEach(el => {
+                if (!el.name || el.type === 'hidden' || el.type === 'submit') return;
+                if (saved[el.name] != null && !el.value) el.value = saved[el.name];
+                el.addEventListener('change', () => {
+                    const data = {};
+                    form.querySelectorAll('input, select, textarea').forEach(x => {
+                        if (x.name && x.type !== 'hidden' && x.type !== 'submit') data[x.name] = x.value;
+                    });
+                    try { localStorage.setItem(key, JSON.stringify(data)); } catch (_) {}
+                });
+            });
+        });
+
+        // 7. Preset coordinate handler (used by Integrated + Ensemble)
+        const PRESETS = {
+            kabuto:  [-0.419,   31.893],
+            kisumu:  [-0.0917,  34.7680],
+            mwanza:  [-2.5164,  32.9175],
+            entebbe: [ 0.0500,  32.4600],
+        };
+        const locSel = document.getElementById('id_location');
+        const latIn  = document.getElementById('id_latitude');
+        const lonIn  = document.getElementById('id_longitude');
+        if (locSel && latIn && lonIn) {
+            const applyPreset = () => {
+                const v = locSel.value, custom = v === 'custom';
+                latIn.readOnly = !custom; lonIn.readOnly = !custom;
+                latIn.style.opacity = custom ? '1' : '.6';
+                lonIn.style.opacity = custom ? '1' : '.6';
+                if (!custom && PRESETS[v]) {
+                    latIn.value = PRESETS[v][0];
+                    lonIn.value = PRESETS[v][1];
+                }
+            };
+            locSel.addEventListener('change', applyPreset);
+            applyPreset();
+
+            // 8. Geolocate button
+            const geoBtn = document.querySelector('[data-geolocate]');
+            if (geoBtn && 'geolocation' in navigator) {
+                geoBtn.addEventListener('click', () => {
+                    geoBtn.dataset.loading = '1';
+                    geoBtn.disabled = true;
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => {
+                            locSel.value = 'custom';
+                            applyPreset();
+                            latIn.value = pos.coords.latitude.toFixed(4);
+                            lonIn.value = pos.coords.longitude.toFixed(4);
+                            geoBtn.dataset.loading = '0';
+                            geoBtn.disabled = false;
+                        },
+                        () => {
+                            geoBtn.dataset.loading = '0';
+                            geoBtn.disabled = false;
+                            alert('Could not get location. Please enter coordinates manually.');
+                        },
+                        { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
+                    );
+                });
+            } else if (geoBtn) {
+                geoBtn.style.display = 'none';
+            }
+        }
+    })();
+    </script>
+    {% block extra_scripts %}{% endblock %}
 </body>
 </html>

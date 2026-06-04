@@ -1,179 +1,153 @@
 {% extends "base.html" %}
 {% block title %}Ensemble Prediction{% endblock %}
 
-{% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-10">
-        <div class="section-title">
-            <h2>Ensemble Prediction System</h2>
-            <p class="lead">Combining Indigenous knowledge with scientific data using advanced ensemble methods</p>
-        </div>
-        
-        <div class="card">
-            <div class="card-header bg-gradient-primary text-black">
-                <h3 class="mb-0"><i class="fas fa-robot me-2"></i>Prediction Parameters</h3>
-            </div>
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    <h4 class="text-primary mb-4"><i class="fas fa-seedling me-2"></i>System Parameters</h4>
-                    <div class="row g-4">
-                        {% for field in form %}
-                        <div class="col-md-{% if 'latitude' in field.name or 'longitude' in field.name %}6{% else %}4{% endif %}">
-                            <label class="form-label fw-bold">{{ field.label }}</label>
-                            {{ field }}
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-calculator me-2"></i>Generate Prediction
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-       {% if ensemble_pred %}
-       <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="card h-100">
-                    <div class="card-header bg-info text-white">
-                        <h3 class="mb-0"><i class="fas fa-moon me-2"></i>Indigenous Prediction</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <h4 class="text-info">Safety Assessment</h4>
-                            <p class="display-6 fw-bold {% if ik_result.0 == 'Good' %}text-success{% elif ik_result.0 == 'Risky' %}text-danger{% else %}text-warning{% endif %}">
-                                {{ ik_result.0 }}
-                            </p>
-                        </div>
-                        <div class="row">
-                            <div class="col-6">
-                                <h5 class="text-info">Wind</h5>
-                                <p class="fw-bold">{{ ik_result.1 }}</p>
-                            </div>
-                            <div class="col-6">
-                                <h5 class="text-info">Temperature</h5>
-                                <p class="fw-bold">{{ ik_result.2 }}</p>
-                            </div>
-                            <div class="col-12 mt-3">
-                                <h5 class="text-info">Rainfall</h5>
-                                <p class="fw-bold">{{ ik_result.3 }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6">
-                <div class="card h-100">
-                    <div class="card-header bg-success text-white">
-                        <h3 class="mb-0"><i class="fas fa-satellite me-2"></i>Scientific Data</h3>
-                    </div>
-                    <div class="card-body">
-                        {% if sci_data %}
-                        <div class="row">
-                            <div class="col-6">
-                                <h5 class="text-success">Temperature</h5>
-                                <p class="fw-bold">{{ sci_data.temp }}°C</p>
-                            </div>
-                            <div class="col-6">
-                                <h5 class="text-success">Humidity</h5>
-                                <p class="fw-bold">{{ sci_data.humidity }}%</p>
-                            </div>
-                            <div class="col-6 mt-3">
-                                <h5 class="text-success">Precipitation</h5>
-                                <p class="fw-bold">{{ sci_data.precipitation }}mm</p>
-                            </div>
-                            <div class="col-6 mt-3">
-                                <h5 class="text-success">Wind Speed</h5>
-                                <p class="fw-bold">{{ sci_data.wind_speed }} m/s</p>
-                            </div>
-                        </div>
-                        {% else %}
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            Scientific data currently unavailable
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-<div class="row mt-4">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header bg-info text-white">
-                <h3 class="mb-0"><i class="fas fa-brain me-2"></i>Ensemble Prediction</h3>
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <h5 class="text-info">Safety Assessment</h5>
-                    <p class="display-6 fw-bold 
-                        {% if ensemble_pred == 'Good' %}text-success
-                        {% elif ensemble_pred == 'Risky' %}text-danger
-                        {% else %}text-warning{% endif %}">
-                        {{ ensemble_pred }}
-                    </p>
-                </div>
-                
-                <h5 class="text-info">Recommendation</h5>
-                <p class="lead">{{ ensemble_str }}</p>
-                
-                <div class="risk-indicator mb-3">
-                    <div class="progress" style="height: 25px;">
-                        <div class="progress-bar 
-                            {% if ensemble_risk < 0.4 %}bg-success
-                            {% elif ensemble_risk < 0.7 %}bg-warning
-                            {% else %}bg-danger{% endif %}" 
-                            role="progressbar" 
-                            style="width: {{ ensemble_risk|floatformat:0 }}%" 
-                            aria-valuenow="{{ ensemble_risk|floatformat:0 }}" 
-                            aria-valuemin="0" 
-                            aria-valuemax="100">
-                            {{ ensemble_risk|floatformat:0 }}%
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="alert 
-                    {% if ensemble_risk < 0.4 %}alert-success
-                    {% elif ensemble_risk < 0.7 %}alert-warning
-                    {% else %}alert-danger{% endif %}">
-                    <i class="fas 
-                        {% if ensemble_risk < 0.4 %}fa-check-circle
-                        {% elif ensemble_risk < 0.7 %}fa-exclamation-triangle
-                        {% else %}fa-skull-crossbones{% endif %} me-2"></i>
-                    <strong>
-                        {% if ensemble_risk < 0.4 %}Low Risk
-                        {% elif ensemble_risk < 0.7 %}Moderate Risk
-                        {% else %}High Risk{% endif %}
-                    </strong>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endif %}
-    </div>
-</div>
+{% block extra_head %}{% endblock %}
 
-<style>
-    .risk-indicator {
-        background: #f8f9fa;
-        border-radius: 5px;
-        overflow: hidden;
-    }
-    .progress-bar {
-        transition: width 0.6s ease;
-    }
-    .card-header {
-        border-bottom: none;
-    }
-    .card {
-        box-shadow: 0 0.15rem 1.75rem 0 rgba(33, 40, 50, 0.15);
-    }
-</style>
+{% block content %}
+<div class="mx-auto" style="max-width: 1120px;">
+    <header class="text-center mb-5">
+        <span class="chip chip-leaf"><span class="icon icon-xs">neurology</span>Ensemble</span>
+        <h1 class="mt-4">Calibrated forecast with per-class confidence</h1>
+        <p class="mt-3 text-muted-2 mx-auto" style="max-width: 54ch;">Random Forest + fuzzy posterior, calibrated cross-fit.</p>
+    </header>
+
+    <section class="surface surface-accent acc-leaf p-4 p-lg-5">
+        <div class="d-flex align-items-center gap-2 mb-4"><span class="icon text-leaf">smart_toy</span><h3 class="mb-0">Prediction parameters</h3></div>
+        <form method="post" data-persist="ensemble" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}<div class="alert-mat alert-danger form-nonfield-errors"><span class="icon">error</span><div class="small">{{ form.non_field_errors|join:" " }}</div></div>{% endif %}
+
+            <p class="small text-uppercase fw-bold text-muted-2 mb-3 d-flex align-items-center gap-2" style="letter-spacing:.08em;font-size:.72rem;"><span class="icon icon-xs">spa</span>Indigenous</p>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3"><label class="field-label"><span class="icon icon-sm text-brand">air</span>{{ form.wind_type.label }}</label>{{ form.wind_type }}{% if form.wind_type.errors %}<div class="field-error">{{ form.wind_type.errors|join:" " }}</div>{% endif %}</div>
+                <div class="col-md-6 col-lg-3"><label class="field-label"><span class="icon icon-sm text-brand">dark_mode</span>{{ form.moon_phase.label }}</label>{{ form.moon_phase }}{% if form.moon_phase.errors %}<div class="field-error">{{ form.moon_phase.errors|join:" " }}</div>{% endif %}</div>
+                <div class="col-md-6 col-lg-3"><label class="field-label"><span class="icon icon-sm text-brand">cloud</span>{{ form.cloud_condition.label }}</label>{{ form.cloud_condition }}{% if form.cloud_condition.errors %}<div class="field-error">{{ form.cloud_condition.errors|join:" " }}</div>{% endif %}</div>
+                <div class="col-md-6 col-lg-3"><label class="field-label"><span class="icon icon-sm text-brand">thermostat</span>{{ form.body_temperature.label }}</label>{{ form.body_temperature }}{% if form.body_temperature.errors %}<div class="field-error">{{ form.body_temperature.errors|join:" " }}</div>{% endif %}</div>
+            </div>
+
+            <hr class="my-4" style="border-color: var(--ink-100);">
+
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                <p class="small text-uppercase fw-bold text-muted-2 m-0 d-flex align-items-center gap-2" style="letter-spacing:.08em;font-size:.72rem;"><span class="icon icon-xs">location_on</span>Location</p>
+                <button type="button" data-geolocate class="btn-mat btn-tonal btn-sm"><span class="icon icon-sm">my_location</span>Use my location</button>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="field-label"><span class="icon icon-sm text-brand">place</span>{{ form.location.label }}</label>
+                    {{ form.location }}
+                    {% if form.location.errors %}<div class="field-error">{{ form.location.errors|join:" " }}</div>{% endif %}
+                </div>
+                <div class="col-md-6 col-lg-3"><label class="field-label"><span class="icon icon-sm text-brand">explore</span>{{ form.latitude.label }}</label>{{ form.latitude }}{% if form.latitude.errors %}<div class="field-error">{{ form.latitude.errors|join:" " }}</div>{% endif %}</div>
+                <div class="col-md-6 col-lg-3"><label class="field-label"><span class="icon icon-sm text-brand">explore</span>{{ form.longitude.label }}</label>{{ form.longitude }}{% if form.longitude.errors %}<div class="field-error">{{ form.longitude.errors|join:" " }}</div>{% endif %}</div>
+            </div>
+
+            <div class="mt-4 d-flex justify-content-center">
+                <button type="submit" class="btn-mat btn-leaf btn-lg"><span class="icon">bolt</span>Run ensemble</button>
+            </div>
+        </form>
+    </section>
+
+    {% if ensemble_pred %}
+    {% with ik_v=ik_result.0 %}
+    <div data-results class="row g-4 mt-2 anim-rise">
+        <div class="col-md-6">
+            <article class="surface surface-accent p-4 h-100">
+                <div class="d-flex align-items-center gap-2 mb-3"><span class="icon text-brand">dark_mode</span><h3 class="mb-0">Indigenous reading</h3></div>
+                <div class="verdict {% if ik_v == 'Good' %}verdict-good{% elif ik_v == 'Normal' %}verdict-normal{% elif ik_v == 'Risky' %}verdict-risky{% else %}verdict-bad{% endif %} mb-3">
+                    <div class="verdict-icon"><span class="icon icon-fill icon-lg">task_alt</span></div>
+                    <div><p class="verdict-label">Safety assessment</p><p class="verdict-value">{{ ik_v }}</p></div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-6"><div class="metric"><p class="metric-label"><span class="icon icon-xs text-brand">air</span>Wind</p><p class="metric-value">{{ ik_result.1 }}</p></div></div>
+                    <div class="col-6"><div class="metric"><p class="metric-label"><span class="icon icon-xs text-brand">thermostat</span>Temp</p><p class="metric-value">{{ ik_result.2 }}</p></div></div>
+                    <div class="col-12"><div class="metric"><p class="metric-label"><span class="icon icon-xs text-brand">rainy</span>Rainfall</p><p class="metric-value">{{ ik_result.3 }}</p></div></div>
+                </div>
+            </article>
+        </div>
+
+        <div class="col-md-6">
+            <article class="surface surface-accent acc-leaf p-4 h-100">
+                <div class="d-flex align-items-center gap-2 mb-3"><span class="icon text-leaf">satellite_alt</span><h3 class="mb-0">Live weather</h3></div>
+                {% if sci_data %}
+                <div class="row g-3">
+                    <div class="col-6"><div class="metric"><p class="metric-label"><span class="icon icon-xs text-leaf">device_thermostat</span>Temperature</p><p class="metric-value">{{ sci_data.temp }}°C</p></div></div>
+                    <div class="col-6"><div class="metric"><p class="metric-label"><span class="icon icon-xs text-leaf">water_drop</span>Humidity</p><p class="metric-value">{{ sci_data.humidity }}%</p></div></div>
+                    <div class="col-6"><div class="metric"><p class="metric-label"><span class="icon icon-xs text-leaf">rainy</span>Precipitation</p><p class="metric-value">{{ sci_data.precipitation }} mm</p></div></div>
+                    <div class="col-6"><div class="metric"><p class="metric-label"><span class="icon icon-xs text-leaf">air</span>Wind speed</p><p class="metric-value">{{ sci_data.wind_speed }} m/s</p></div></div>
+                </div>
+                {% if sci_data.fetched_at %}<p class="mt-3 small text-muted-2 d-flex align-items-center gap-1"><span class="icon icon-xs">schedule</span>Fetched {{ sci_data.fetched_at }}</p>{% endif %}
+                {% else %}
+                <div class="alert-mat alert-warning"><span class="icon">warning</span><div class="small">Scientific data currently unavailable.</div></div>
+                {% endif %}
+            </article>
+        </div>
+    </div>
+
+    <section class="surface surface-accent acc-sky mt-4 p-4 p-lg-5 anim-rise">
+        <div class="d-flex align-items-center gap-2 mb-3"><span class="icon text-sky">neurology</span><h3 class="mb-0">Ensemble verdict</h3></div>
+
+        <div class="row g-4 align-items-stretch">
+            <div class="col-md-5">
+                <div class="verdict {% if ensemble_pred == 'Good' %}verdict-good{% elif ensemble_pred == 'Normal' %}verdict-normal{% elif ensemble_pred == 'Risky' %}verdict-risky{% else %}verdict-bad{% endif %} h-100">
+                    <div class="verdict-icon">
+                        <span class="icon icon-fill icon-lg">
+                            {% if ensemble_pred == 'Good' %}check_circle
+                            {% elif ensemble_pred == 'Normal' %}info
+                            {% elif ensemble_pred == 'Risky' %}warning
+                            {% else %}dangerous{% endif %}
+                        </span>
+                    </div>
+                    <div>
+                        <p class="verdict-label">Predicted class</p>
+                        <p class="verdict-value">{{ ensemble_pred }}</p>
+                        {% if top_confidence %}<p class="small text-muted-2 mt-1 mb-0">Top confidence {{ top_confidence|floatformat:2 }}</p>{% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-7">
+                <p class="fs-5 mb-3">{{ ensemble_str }}</p>
+                {% if probabilities %}
+                <p class="small text-uppercase fw-bold text-muted-2 mb-3" style="letter-spacing:.08em;font-size:.72rem;">Calibrated probability per class</p>
+                <div class="d-flex flex-column gap-3">
+                    {% for cls, p in probabilities %}
+                    <div>
+                        <div class="conf-head">
+                            <span class="fw-semibold">{{ cls }}</span>
+                            <span class="text-muted-2 font-monospace">{{ p|floatformat:3 }}</span>
+                        </div>
+                        <div class="conf-bar">
+                            <div class="conf-fill
+                                {% if cls == 'Good' %}fill-good
+                                {% elif cls == 'Normal' %}fill-normal
+                                {% elif cls == 'Risky' %}fill-risky
+                                {% else %}fill-bad{% endif %}"
+                                style="width: {% widthratio p 1 100 %}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <hr class="my-4" style="border-color: var(--ink-100);">
+
+        <p class="small text-uppercase fw-bold text-muted-2 mb-3 d-flex align-items-center gap-2" style="letter-spacing:.08em;font-size:.72rem;"><span class="icon icon-xs">speed</span>Overall risk score</p>
+        <div class="risk-meter" style="--risk-pos: {% widthratio ensemble_risk 1 100 %}%;"></div>
+        <div class="d-flex justify-content-between small text-muted-2 mt-2"><span>Low risk</span><span>Moderate</span><span>High risk</span></div>
+
+        <div class="alert-mat mt-4 {% if ensemble_risk < 0.4 %}alert-success{% elif ensemble_risk < 0.7 %}alert-warning{% else %}alert-danger{% endif %}">
+            <span class="icon icon-lg">
+                {% if ensemble_risk < 0.4 %}check_circle{% elif ensemble_risk < 0.7 %}warning{% else %}dangerous{% endif %}
+            </span>
+            <div>
+                <p class="fw-semibold mb-1">{% if ensemble_risk < 0.4 %}Low risk{% elif ensemble_risk < 0.7 %}Moderate risk{% else %}High risk{% endif %}</p>
+                {% if model_version %}<p class="small mb-0">Model {{ model_version }}</p>{% endif %}
+            </div>
+        </div>
+    </section>
+    {% endwith %}
+    {% endif %}
+</div>
 {% endblock %}

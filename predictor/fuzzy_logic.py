@@ -520,22 +520,11 @@ RULES = _parse_rules(RULES_RAW)
 # Inference engine
 # ---------------------------------------------------------------------------
 
-def determine_lake_position(wind_type, moon_day, cloud_percent, body_temp_value):
-    """
-    Mamdani-style max-min fuzzy inference for lake position assessment.
+LAKE_POS_CLASSES = ("Good", "Normal", "Risky", "Bad")
 
-    Parameters
-    ----------
-    wind_type       : str   — named wind label (e.g. 'Genya', 'Kus', 'Nyakoi')
-    moon_day        : float — lunar day in cycle [0, 29]
-    cloud_percent   : float — cloud cover percentage [0, 100]
-    body_temp_value : float — body temperature in °C [34, 40]
 
-    Returns
-    -------
-    (lake_pos, wind_out, temp_out, rain_out) : tuple[str, str, str, str]
-        Category with the highest aggregated max-firing strength for each output.
-    """
+def _compute_firings(wind_type, moon_day, cloud_percent, body_temp_value):
+    """Run the rule base and return per-output max-firing dictionaries."""
     moon_mem  = moon_membership(moon_day)
     cloud_mem = cloud_membership(cloud_percent)
     body_mem  = body_temp_membership(body_temp_value)
@@ -548,32 +537,33 @@ def determine_lake_position(wind_type, moon_day, cloud_percent, body_temp_value)
     for (wind_set, moon_set, cloud_set, body_set,
          wind_out, temp_out, rain_out, lake_pos) in RULES:
 
-        # Wind: crisp categorical match
         if 'Any' not in wind_set and wind_type not in wind_set:
             continue
 
-        # Moon phase: fuzzy OR across listed phases
         moon_str = (1.0 if 'Any Position' in moon_set
                     else max((moon_mem.get(m, 0.0) for m in moon_set), default=0.0))
-
-        # Cloud cover: fuzzy OR across listed conditions
         cloud_str = (1.0 if 'Any' in cloud_set
                      else max((cloud_mem.get(c, 0.0) for c in cloud_set), default=0.0))
-
-        # Body temperature: fuzzy OR across listed conditions
         body_str = (1.0 if 'Any' in body_set
                     else max((body_mem.get(b, 0.0) for b in body_set), default=0.0))
 
-        # Mamdani AND = min
         firing = min(moon_str, cloud_str, body_str)
         if firing <= 0.0:
             continue
 
-        # Max aggregation across all firing rules
         if firing > lake_pos_max[lake_pos]:  lake_pos_max[lake_pos] = firing
         if firing > wind_out_max[wind_out]:   wind_out_max[wind_out] = firing
         if firing > temp_out_max[temp_out]:   temp_out_max[temp_out] = firing
         if firing > rain_out_max[rain_out]:   rain_out_max[rain_out] = firing
+
+    return lake_pos_max, wind_out_max, temp_out_max, rain_out_max
+
+
+def determine_lake_position(wind_type, moon_day, cloud_percent, body_temp_value):
+    """Mamdani max-min inference — returns the winning category per output."""
+    lake_pos_max, wind_out_max, temp_out_max, rain_out_max = _compute_firings(
+        wind_type, moon_day, cloud_percent, body_temp_value
+    )
 
     def _winner(d, default="Normal"):
         return max(d.items(), key=lambda kv: kv[1])[0] if d else default
@@ -584,6 +574,24 @@ def determine_lake_position(wind_type, moon_day, cloud_percent, body_temp_value)
         _winner(temp_out_max),
         _winner(rain_out_max),
     )
+
+
+def fuzzy_posterior(wind_type, moon_day, cloud_percent, body_temp_value,
+                    classes=LAKE_POS_CLASSES):
+    """Normalised lake-position membership vector across `classes`.
+
+    Returns a list whose length and order match `classes`. When no rule
+    fires (all zeros), the vector is left as zeros — the caller can decide
+    on a fallback.
+    """
+    lake_pos_max, *_ = _compute_firings(
+        wind_type, moon_day, cloud_percent, body_temp_value
+    )
+    raw = [float(lake_pos_max.get(c, 0.0)) for c in classes]
+    total = sum(raw)
+    if total > 0.0:
+        return [v / total for v in raw]
+    return raw
 
 
 # ---------------------------------------------------------------------------

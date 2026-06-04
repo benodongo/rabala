@@ -1,135 +1,68 @@
 {% extends "base.html" %}
-{% block title %}About PC&dash;HEWS{% endblock %}
+{% block title %}About PC-HEWS{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-10">
-        <div class="section-title">
-            <h2>About PC&dash;HEWS Lake Predictor</h2>
-            <p class="lead">Bridging traditional wisdom and modern science for safer fishing communities</p>
-        </div>
+<div class="mx-auto" style="max-width: 1180px;">
+    <header class="text-center mb-5">
+        <span class="chip"><span class="icon icon-xs">info</span>About</span>
+        <h1 class="mt-4">Tradition, paired with science</h1>
+        <p class="mt-3 text-muted-2 mx-auto" style="max-width: 54ch;">PC-HEWS operationalises Lake Victoria fishing knowledge alongside calibrated machine learning.</p>
+    </header>
 
-        <div class="card mb-5">
-            <div class="row g-0">
-                <div class="col-md-6">
-                    <img src="https://images.unsplash.com/photo-1566438480900-0609be27a4be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
-                         class="img-fluid rounded-start h-100" alt="Lake Victoria fishing community">
-                </div>
-                <div class="col-md-6">
-                    <div class="card-body p-4">
-                        <h3 class="card-title text-primary">Our Mission</h3>
-                        <p class="card-text">PC&dash;HEWS was created to preserve and enhance the Indigenous weather knowledge of Lake Victoria communities while integrating modern scientific methods to improve prediction accuracy and safety for fishermen.</p>
-                        
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
-                                <i class="fas fa-water text-primary fa-lg"></i>
-                            </div>
-                            <div>
-                                <h5 class="mb-0">Protecting Communities</h5>
-                                <p class="text-muted small mb-0">Reducing fishing accidents through better predictions</p>
-                            </div>
-                        </div>
-                        
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
-                                <i class="fas fa-brain text-primary fa-lg"></i>
-                            </div>
-                            <div>
-                                <h5 class="mb-0">Preserving Knowledge</h5>
-                                <p class="text-muted small mb-0">Documenting and digitizing traditional forecasting methods</p>
-                            </div>
-                        </div>
-                        
-                        <div class="d-flex align-items-center">
-                            <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
-                                <i class="fas fa-chart-line text-primary fa-lg"></i>
-                            </div>
-                            <div>
-                                <h5 class="mb-0">Improving Accuracy</h5>
-                                <p class="text-muted small mb-0">Combining the best of both knowledge systems</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <section class="surface overflow-hidden mb-4">
+        <div class="row g-0">
+            <div class="col-md-5" style="min-height: 280px; background-image: url('https://images.unsplash.com/photo-1566438480900-0609be27a4be?auto=format&fit=crop&w=1000&q=80'); background-size: cover; background-position: center;"></div>
+            <div class="col-md-7 p-4 p-lg-5">
+                <h3 class="text-brand">Mission</h3>
+                <p class="mt-3">Preserve indigenous weather knowledge and pair it with rigorous methods so forecasts are both rooted and reliable.</p>
+
+                <ul class="list-unstyled mt-4 d-flex flex-column gap-3 mb-0">
+                    <li class="d-flex align-items-start gap-3">
+                        <span class="icon-tile"><span class="icon icon-fill">waves</span></span>
+                        <div><p class="fw-semibold mb-1">Protect communities</p><p class="small text-muted-2 mb-0">Cut fishing accidents with local, relevant forecasts.</p></div>
+                    </li>
+                    <li class="d-flex align-items-start gap-3">
+                        <span class="icon-tile leaf"><span class="icon icon-fill">menu_book</span></span>
+                        <div><p class="fw-semibold mb-1">Preserve knowledge</p><p class="small text-muted-2 mb-0">Document and digitise elder forecasting methods.</p></div>
+                    </li>
+                    <li class="d-flex align-items-start gap-3">
+                        <span class="icon-tile amber"><span class="icon icon-fill">insights</span></span>
+                        <div><p class="fw-semibold mb-1">Improve accuracy</p><p class="small text-muted-2 mb-0">Combine both systems with calibrated ML.</p></div>
+                    </li>
+                </ul>
             </div>
         </div>
+    </section>
 
-        <div class="row mb-5">
-            <div class="col-md-6 mb-4 mb-md-0">
-                <div class="card h-100">
-                    <div class="card-header bg-primary text-white">
-                        <h3 class="mb-0"><i class="fas fa-history me-2"></i>Our Story</h3>
-                    </div>
-                    <div class="card-body">
-                        <p>PC&dash;HEWS began as a research project in 2018 when meteorologists working with Lake Victoria fishing communities noticed the remarkable accuracy of traditional forecasting methods passed down through generations.</p>
-                        <p>After documenting over 200 Indigenous forecasting parameters from elders across Kenya, Uganda, and Tanzania, our team developed algorithms to systematically analyze these patterns alongside modern weather data.</p>
-                        <p>Today, PC&dash;HEWS serves over 50 fishing communities with daily predictions that combine both knowledge systems.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card h-100">
-                    <div class="card-header bg-success text-white">
-                        <h3 class="mb-0"><i class="fas fa-users me-2"></i>Our Team</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-success bg-opacity-10 p-2 rounded-circle me-3">
-                                <i class="fas fa-user-tie text-success"></i>
-                            </div>
-                            <div>
-                                <h5 class="mb-0">Multidisciplinary Experts</h5>
-                                <p class="text-muted small mb-0">Meteorologists, anthropologists, and data scientists</p>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-success bg-opacity-10 p-2 rounded-circle me-3">
-                                <i class="fas fa-hands-helping text-success"></i>
-                            </div>
-                            <div>
-                                <h5 class="mb-0">Community Partners</h5>
-                                <p class="text-muted small mb-0">Over 200 traditional knowledge holders</p>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <div class="bg-success bg-opacity-10 p-2 rounded-circle me-3">
-                                <i class="fas fa-laptop-code text-success"></i>
-                            </div>
-                            <div>
-                                <h5 class="mb-0">Technology Team</h5>
-                                <p class="text-muted small mb-0">Developers creating accessible prediction tools</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="row g-4">
+        <div class="col-md-6 reveal">
+            <article class="surface surface-accent p-4 p-lg-5 h-100">
+                <div class="d-flex align-items-center gap-2 mb-3"><span class="icon text-brand">history</span><h3 class="mb-0">Story</h3></div>
+                <p>Started as field research documenting how elders read wind, moon, cloud and felt temperature.</p>
+                <p class="mt-3">Elicitation sessions across Kenya, Uganda and Tanzania were translated into a fuzzy rule base, then paired with calibrated ML on Open-Meteo data.</p>
+                <p class="mt-3 mb-0">Today the platform serves a growing set of communities with daily forecasts.</p>
+            </article>
         </div>
-
-        <div class="card">
-            <div class="card-header bg-info text-white">
-                <h3 class="mb-0"><i class="fas fa-map-marked-alt me-2"></i>Our Impact</h3>
-            </div>
-            <div class="card-body">
-                <div class="row text-center">
-                    <div class="col-md-3 mb-4 mb-md-0">
-                        <div class="display-4 text-primary fw-bold">45%</div>
-                        <p class="mb-0">Reduction in fishing accidents</p>
-                    </div>
-                    <div class="col-md-3 mb-4 mb-md-0">
-                        <div class="display-4 text-primary fw-bold">62</div>
-                        <p class="mb-0">Communities served</p>
-                    </div>
-                    <div class="col-md-3 mb-4 mb-md-0">
-                        <div class="display-4 text-primary fw-bold">214</div>
-                        <p class="mb-0">Traditional parameters documented</p>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="display-4 text-primary fw-bold">89%</div>
-                        <p class="mb-0">Prediction accuracy rate</p>
-                    </div>
-                </div>
-            </div>
+        <div class="col-md-6 reveal">
+            <article class="surface surface-accent acc-leaf p-4 p-lg-5 h-100">
+                <div class="d-flex align-items-center gap-2 mb-3"><span class="icon text-leaf">groups</span><h3 class="mb-0">Team</h3></div>
+                <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
+                    <li class="d-flex align-items-start gap-3"><span class="icon-tile leaf"><span class="icon">work</span></span><div><p class="fw-semibold mb-1">Multidisciplinary experts</p><p class="small text-muted-2 mb-0">Meteorology, anthropology, data science.</p></div></li>
+                    <li class="d-flex align-items-start gap-3"><span class="icon-tile leaf"><span class="icon">handshake</span></span><div><p class="fw-semibold mb-1">Community partners</p><p class="small text-muted-2 mb-0">Knowledge holders across the basin.</p></div></li>
+                    <li class="d-flex align-items-start gap-3"><span class="icon-tile leaf"><span class="icon">code</span></span><div><p class="fw-semibold mb-1">Engineering</p><p class="small text-muted-2 mb-0">Accessible prediction tooling.</p></div></li>
+                </ul>
+            </article>
         </div>
     </div>
+
+    <section class="surface surface-accent acc-sky mt-4 p-4 p-lg-5 reveal">
+        <div class="d-flex align-items-center gap-2 mb-4"><span class="icon text-sky">map</span><h3 class="mb-0">Indicators</h3></div>
+        <div class="row g-3">
+            <div class="col-sm-6 col-lg-3"><div class="metric text-center"><p class="metric-label justify-content-center">Goal reduction</p><p class="metric-value display-6"><span data-count="45" data-suffix="%">45%</span></p><p class="small text-muted-2 mt-1 mb-0">fishing accidents</p></div></div>
+            <div class="col-sm-6 col-lg-3"><div class="metric text-center"><p class="metric-label justify-content-center">Communities</p><p class="metric-value display-6"><span data-count="62">62</span></p><p class="small text-muted-2 mt-1 mb-0">served</p></div></div>
+            <div class="col-sm-6 col-lg-3"><div class="metric text-center"><p class="metric-label justify-content-center">Parameters</p><p class="metric-value display-6"><span data-count="214">214</span></p><p class="small text-muted-2 mt-1 mb-0">documented</p></div></div>
+            <div class="col-sm-6 col-lg-3"><div class="metric text-center"><p class="metric-label justify-content-center">Accuracy</p><p class="metric-value display-6"><span data-count="89" data-suffix="%">89%</span></p><p class="small text-muted-2 mt-1 mb-0">target rate</p></div></div>
+        </div>
+    </section>
 </div>
 {% endblock %}

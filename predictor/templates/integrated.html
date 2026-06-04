@@ -1,151 +1,110 @@
 {% extends "base.html" %}
 {% block title %}Integrated Prediction{% endblock %}
 
+{% block extra_head %}{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-10">
-        <div class="section-title">
-            <h2>Integrated Prediction System</h2>
-            <p class="lead">Combine Indigenous knowledge with scientific data for enhanced accuracy</p>
+<div class="mx-auto" style="max-width: 1120px;">
+    <header class="text-center mb-5">
+        <span class="chip"><span class="icon icon-xs">layers</span>Integrated</span>
+        <h1 class="mt-4">Indigenous + live weather</h1>
+        <p class="mt-3 text-muted-2 mx-auto" style="max-width: 54ch;">Indigenous reading fused with Open-Meteo. Worst-case risk surfaces first.</p>
+    </header>
+
+    <section class="surface surface-accent p-4 p-lg-5">
+        <div class="d-flex align-items-center gap-2 mb-4"><span class="icon text-brand">tune</span><h3 class="mb-0">Prediction parameters</h3></div>
+        <form method="post" data-persist="integrated" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}<div class="alert-mat alert-danger form-nonfield-errors"><span class="icon">error</span><div class="small">{{ form.non_field_errors|join:" " }}</div></div>{% endif %}
+
+            <p class="small text-uppercase fw-bold text-muted-2 mb-3 d-flex align-items-center gap-2" style="letter-spacing:.08em;font-size:.72rem;"><span class="icon icon-xs">spa</span>Indigenous</p>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3"><label class="field-label"><span class="icon icon-sm text-brand">air</span>{{ form.wind_type.label }}</label>{{ form.wind_type }}{% if form.wind_type.errors %}<div class="field-error">{{ form.wind_type.errors|join:" " }}</div>{% endif %}</div>
+                <div class="col-md-6 col-lg-3"><label class="field-label"><span class="icon icon-sm text-brand">dark_mode</span>{{ form.moon_phase.label }}</label>{{ form.moon_phase }}{% if form.moon_phase.errors %}<div class="field-error">{{ form.moon_phase.errors|join:" " }}</div>{% endif %}</div>
+                <div class="col-md-6 col-lg-3"><label class="field-label"><span class="icon icon-sm text-brand">cloud</span>{{ form.cloud_condition.label }}</label>{{ form.cloud_condition }}{% if form.cloud_condition.errors %}<div class="field-error">{{ form.cloud_condition.errors|join:" " }}</div>{% endif %}</div>
+                <div class="col-md-6 col-lg-3"><label class="field-label"><span class="icon icon-sm text-brand">thermostat</span>{{ form.body_temperature.label }}</label>{{ form.body_temperature }}{% if form.body_temperature.errors %}<div class="field-error">{{ form.body_temperature.errors|join:" " }}</div>{% endif %}</div>
+            </div>
+
+            <hr class="my-4" style="border-color: var(--ink-100);">
+
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                <p class="small text-uppercase fw-bold text-muted-2 m-0 d-flex align-items-center gap-2" style="letter-spacing:.08em;font-size:.72rem;"><span class="icon icon-xs">location_on</span>Location</p>
+                <button type="button" data-geolocate class="btn-mat btn-tonal btn-sm"><span class="icon icon-sm">my_location</span>Use my location</button>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="field-label"><span class="icon icon-sm text-brand">place</span>{{ form.location.label }}</label>
+                    {{ form.location }}
+                    {% if form.location.errors %}<div class="field-error">{{ form.location.errors|join:" " }}</div>{% endif %}
+                </div>
+                <div class="col-md-6 col-lg-3"><label class="field-label"><span class="icon icon-sm text-brand">explore</span>{{ form.latitude.label }}</label>{{ form.latitude }}{% if form.latitude.errors %}<div class="field-error">{{ form.latitude.errors|join:" " }}</div>{% endif %}</div>
+                <div class="col-md-6 col-lg-3"><label class="field-label"><span class="icon icon-sm text-brand">explore</span>{{ form.longitude.label }}</label>{{ form.longitude }}{% if form.longitude.errors %}<div class="field-error">{{ form.longitude.errors|join:" " }}</div>{% endif %}</div>
+            </div>
+
+            <div class="mt-4 d-flex justify-content-center">
+                <button type="submit" class="btn-mat btn-filled btn-lg"><span class="icon">bolt</span>Generate prediction</button>
+            </div>
+        </form>
+    </section>
+
+    {% if ik_result %}
+    {% with ik_v=ik_result.0 %}
+    <div data-results class="row g-4 mt-2 anim-rise">
+        <div class="col-md-6">
+            <article class="surface surface-accent p-4 h-100">
+                <div class="d-flex align-items-center gap-2 mb-3"><span class="icon text-brand">dark_mode</span><h3 class="mb-0">Indigenous reading</h3></div>
+                <div class="verdict {% if ik_v == 'Good' %}verdict-good{% elif ik_v == 'Normal' %}verdict-normal{% elif ik_v == 'Risky' %}verdict-risky{% else %}verdict-bad{% endif %} mb-3">
+                    <div class="verdict-icon"><span class="icon icon-fill icon-lg">task_alt</span></div>
+                    <div><p class="verdict-label">Safety assessment</p><p class="verdict-value">{{ ik_v }}</p></div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-6"><div class="metric"><p class="metric-label"><span class="icon icon-xs text-brand">air</span>Wind</p><p class="metric-value">{{ ik_result.1 }}</p></div></div>
+                    <div class="col-6"><div class="metric"><p class="metric-label"><span class="icon icon-xs text-brand">thermostat</span>Temp</p><p class="metric-value">{{ ik_result.2 }}</p></div></div>
+                    <div class="col-12"><div class="metric"><p class="metric-label"><span class="icon icon-xs text-brand">rainy</span>Rainfall</p><p class="metric-value">{{ ik_result.3 }}</p></div></div>
+                </div>
+            </article>
         </div>
-        
-        <div class="card">
-            <div class="card-header bg-gradient-primary text-black">
-                <h3 class="mb-0"><i class="fas fa-brain me-2"></i>Prediction Parameters</h3>
-            </div>
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    <h4 class="text-primary mb-4"><i class="fas fa-seedling me-2"></i>Indigenous Parameters</h4>
-                    <div class="row g-4">
-                        {% for field in form %}
-                        <div class="col-md-{% if 'latitude' in field.name or 'longitude' in field.name %}6{% else %}4{% endif %}">
-                            <label class="form-label fw-bold">{{ field.label }}</label>
-                            {{ field }}
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-calculator me-2"></i>Generate Prediction
-                        </button>
-                    </div>
-                </form>
-            </div>
+
+        <div class="col-md-6">
+            <article class="surface surface-accent acc-leaf p-4 h-100">
+                <div class="d-flex align-items-center gap-2 mb-3"><span class="icon text-leaf">satellite_alt</span><h3 class="mb-0">Live weather</h3></div>
+                {% if sci_data %}
+                <div class="row g-3">
+                    <div class="col-6"><div class="metric"><p class="metric-label"><span class="icon icon-xs text-leaf">device_thermostat</span>Temperature</p><p class="metric-value">{{ sci_data.temp }}°C</p></div></div>
+                    <div class="col-6"><div class="metric"><p class="metric-label"><span class="icon icon-xs text-leaf">water_drop</span>Humidity</p><p class="metric-value">{{ sci_data.humidity }}%</p></div></div>
+                    <div class="col-6"><div class="metric"><p class="metric-label"><span class="icon icon-xs text-leaf">rainy</span>Precipitation</p><p class="metric-value">{{ sci_data.precipitation }} mm</p></div></div>
+                    <div class="col-6"><div class="metric"><p class="metric-label"><span class="icon icon-xs text-leaf">air</span>Wind speed</p><p class="metric-value">{{ sci_data.wind_speed }} m/s</p></div></div>
+                </div>
+                {% if sci_data.fetched_at %}<p class="mt-3 small text-muted-2 d-flex align-items-center gap-1"><span class="icon icon-xs">schedule</span>Fetched {{ sci_data.fetched_at }}</p>{% endif %}
+                {% else %}
+                <div class="alert-mat alert-warning"><span class="icon">warning</span><div class="small">Scientific data currently unavailable — falling back to indigenous reading only.</div></div>
+                {% endif %}
+            </article>
         </div>
-        
-        {% if ik_result %}
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="card h-100">
-                    <div class="card-header bg-info text-white">
-                        <h3 class="mb-0"><i class="fas fa-moon me-2"></i>Indigenous Prediction</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <h4 class="text-info">Safety Assessment</h4>
-                            <p class="display-6 fw-bold {% if ik_result.0 == 'Good' %}text-success{% elif ik_result.0 == 'Risky' %}text-danger{% else %}text-warning{% endif %}">
-                                {{ ik_result.0 }}
-                            </p>
-                        </div>
-                        <div class="row">
-                            <div class="col-6">
-                                <h5 class="text-info">Wind</h5>
-                                <p class="fw-bold">{{ ik_result.1 }}</p>
-                            </div>
-                            <div class="col-6">
-                                <h5 class="text-info">Temperature</h5>
-                                <p class="fw-bold">{{ ik_result.2 }}</p>
-                            </div>
-                            <div class="col-12 mt-3">
-                                <h5 class="text-info">Rainfall</h5>
-                                <p class="fw-bold">{{ ik_result.3 }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6">
-                <div class="card h-100">
-                    <div class="card-header bg-success text-white">
-                        <h3 class="mb-0"><i class="fas fa-satellite me-2"></i>Scientific Data</h3>
-                    </div>
-                    <div class="card-body">
-                        {% if sci_data %}
-                        <div class="row">
-                            <div class="col-6">
-                                <h5 class="text-success">Temperature</h5>
-                                <p class="fw-bold">{{ sci_data.temp }}°C</p>
-                            </div>
-                            <div class="col-6">
-                                <h5 class="text-success">Humidity</h5>
-                                <p class="fw-bold">{{ sci_data.humidity }}%</p>
-                            </div>
-                            <div class="col-6 mt-3">
-                                <h5 class="text-success">Precipitation</h5>
-                                <p class="fw-bold">{{ sci_data.precipitation }}mm</p>
-                            </div>
-                            <div class="col-6 mt-3">
-                                <h5 class="text-success">Wind Speed</h5>
-                                <p class="fw-bold">{{ sci_data.wind_speed }} m/s</p>
-                            </div>
-                        </div>
-                        {% else %}
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            Scientific data currently unavailable
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card mt-4">
-            <div class="card-header bg-warning text-dark">
-                <h3 class="mb-0"><i class="fas fa-star-of-life me-2"></i>Integrated Risk Assessment</h3>
-            </div>
-            <div class="card-body">
-                <h4 class="mb-4 text-center">{{ prediction }}</h4>
-                
-                <div class="risk-indicator mb-3">
-                    <div class="progress-bar" style="width: {{ risk_percentage }}%"></div>
-                </div>
-                
-                <div class="d-flex justify-content-between mb-4">
-                    <span>Low Risk</span>
-                    <span>High Risk</span>
-                </div>
-                
-                <div class="alert {% if risk < 0.4 %}alert-success{% elif risk < 0.7 %}alert-warning{% else %}alert-danger{% endif %}">
-                    <div class="d-flex align-items-center">
-                        <i class="fas {% if risk < 0.4 %}fa-check-circle{% elif risk < 0.7 %}fa-exclamation-triangle{% else %}fa-skull-crossbones{% endif %} me-3 fa-2x"></i>
-                        <div>
-                            <h5 class="alert-heading">
-                                {% if risk < 0.4 %}
-                                Safe Conditions
-                                {% elif risk < 0.7 %}
-                                Moderate Risk
-                                {% else %}
-                                Dangerous Conditions
-                                {% endif %}
-                            </h5>
-                            <p class="mb-0">
-                                {% if risk < 0.4 %}
-                                The lake conditions are favorable for fishing activities.
-                                {% elif risk < 0.7 %}
-                                Exercise caution - conditions may change unexpectedly.
-                                {% else %}
-                                Avoid fishing - dangerous conditions detected.
-                                {% endif %}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
     </div>
+
+    <section class="surface surface-accent acc-amber mt-4 p-4 p-lg-5 anim-rise">
+        <div class="d-flex align-items-center gap-2 mb-3"><span class="icon text-amber">speed</span><h3 class="mb-0">Integrated risk</h3></div>
+        <p class="text-center fs-5 mb-4">{{ prediction }}</p>
+
+        <div class="risk-meter" style="--risk-pos: {{ risk_percentage }}%;"></div>
+        <div class="d-flex justify-content-between small text-muted-2 mt-2"><span>Low risk</span><span>Moderate</span><span>High risk</span></div>
+
+        <div class="alert-mat mt-4 {% if risk < 0.4 %}alert-success{% elif risk < 0.7 %}alert-warning{% else %}alert-danger{% endif %}">
+            <span class="icon icon-lg">
+                {% if risk < 0.4 %}check_circle{% elif risk < 0.7 %}warning{% else %}dangerous{% endif %}
+            </span>
+            <div>
+                <p class="fw-semibold mb-1">{% if risk < 0.4 %}Safe{% elif risk < 0.7 %}Moderate risk{% else %}Dangerous{% endif %}</p>
+                <p class="small mb-0">
+                    {% if risk < 0.4 %}Conditions favorable.
+                    {% elif risk < 0.7 %}Exercise caution — conditions may shift.
+                    {% else %}Avoid fishing.{% endif %}
+                </p>
+            </div>
+        </div>
+    </section>
+    {% endwith %}
+    {% endif %}
 </div>
 {% endblock %}
